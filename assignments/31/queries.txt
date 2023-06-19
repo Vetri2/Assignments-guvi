@@ -1,0 +1,102 @@
+Collection: users
+Fields: _id, name, email, role, dateOfBirth, createdAt, updatedAt
+
+Collection: codekata
+Fields: _id, problemName, difficultyLevel, createdAt, updatedAt
+
+Collection: attendance
+Fields: _id, userId, date, status, createdAt, updatedAt
+
+Collection: topics
+Fields: _id, topicName, description, createdAt, updatedAt
+
+Collection: tasks
+Fields: _id, userId, codekataId, solution, submittedAt, createdAt, updatedAt
+
+Collection: company_drives
+Fields: _id, driveName, date, companyName, createdAt, updatedAt
+
+Collection: mentors
+Fields: _id, name, email, menteeCount, createdAt, updatedAt
+
+
+
+Find all the topics and tasks that were taught in the month of October:
+db.topics.find({
+  createdAt: {
+    $gte: ISODate("2022-10-01T00:00:00Z"),
+    $lt: ISODate("2022-11-01T00:00:00Z")
+  }
+})
+
+db.tasks.find({
+  createdAt: {
+    $gte: ISODate("2022-10-01T00:00:00Z"),
+    $lt: ISODate("2022-11-01T00:00:00Z")
+  }
+})
+
+Find all the company drives that appeared between October 15, 2020, and October 31, 2020:
+db.company_drives.find({
+  date: {
+    $gte: ISODate("2020-10-15T00:00:00Z"),
+    $lte: ISODate("2020-10-31T23:59:59Z")
+  }
+})
+
+Find all the company drives and students who appeared for the placement:
+db.company_drives.aggregate([
+  {
+    $lookup: {
+      from: "attendance",
+      localField: "_id",
+      foreignField: "driveId",
+      as: "attendance"
+    }
+  },
+  {
+    $lookup: {
+      from: "users",
+      localField: "attendance.userId",
+      foreignField: "_id",
+      as: "students"
+    }
+  }
+])
+
+Find the number of problems solved by the user in codekata:
+db.tasks.aggregate([
+  {
+    $match: {
+      userId: "<userId>"
+    }
+  },
+  {
+    $group: {
+      _id: "$userId",
+      problemsSolved: { $sum: 1 }
+    }
+  }
+])
+
+Find all the mentors who have more than 15 mentees:
+db.mentors.find({
+  menteeCount: { $gt: 15 }
+})
+
+Find the number of users who were absent and the task was not submitted between October 15, 2020, and October 31, 2020:
+db.attendance.find({
+  date: {
+    $gte: ISODate("2020-10-15T00:00:00Z"),
+    $lte: ISODate("2020-10-31T23:59:59Z")
+  },
+  status: "absent"
+}).count()
+
+db.tasks.find({
+  submittedAt: null,
+  createdAt: {
+    $gte: ISODate("2020-10-15T00:00:00Z"),
+    $lte: ISODate("2020-10-31T23:59:59Z")
+  }
+}).count()

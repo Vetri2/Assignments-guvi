@@ -1,0 +1,18 @@
+/* Disable Add to Cart button style */
+.add-to-cart[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* Added to Cart style */
+  .added-to-cart {
+    background-color: #f0f0f0;
+    color: #333;
+  }
+  
+  /* Rating style */
+  .rating {
+    color: orange;
+    font-size: 20px;
+  }
+  

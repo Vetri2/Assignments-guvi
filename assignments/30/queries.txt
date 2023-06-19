@@ -1,0 +1,29 @@
+Find all the information about each product:
+db.products.find({})
+
+Find the product price which is between 400 to 800:
+db.products.find({ price: { $gt: 400, $lt: 800 } })
+
+Find the product price which is not between 400 to 600:
+db.products.find({ price: { $not: { $gt: 400, $lt: 600 } } })
+
+List the four products which have a price greater than 500:
+db.products.find({ price: { $gt: 500 } }).limit(4)
+
+Find the product name and product material of each product:
+db.products.find({}, { name: 1, material: 1 })
+
+Find the product with a row id of 10:
+db.products.findOne({ _id: 10 })
+
+Find only the product name and product material:
+db.products.find({}, { name: 1, material: 1, _id: 0 })
+
+Find all products which contain the value "soft" in the product material:
+db.products.find({ material: /soft/i })
+
+Find products which contain product color "indigo" and product price 492.00:
+db.products.find({ color: "indigo", price: 492.00 })
+
+Delete the products which have the same product price value:
+db.products.deleteMany({ $expr: { $eq: ["$price", "$same_price_field"] } })
